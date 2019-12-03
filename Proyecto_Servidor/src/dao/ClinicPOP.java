@@ -8,6 +8,8 @@ package dao;
 import connection.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import vo.Clinic;
 import vo.User;
 
@@ -53,5 +55,31 @@ public class ClinicPOP {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Clinic getClinicFromId(int cliniId) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        String query = "SELECT * FROM clinic WHERE clinic_id = ?";
+        Clinic aux = new Clinic();
+        try {
+            connection = dbConnection.getConnection();
+            ps = connection.prepareStatement(query);
+
+            ps.setInt(1, cliniId);
+
+            ResultSet rs = ps.executeQuery();
+
+
+            while (rs.next()) {
+                aux.setName(rs.getString("clinic_name"));
+                aux.setCliniId(rs.getInt("clinic_id"));
+                aux.setPhone(rs.getString("phone"));
+                aux.setAdress(rs.getString("address"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return aux;
     }
 }

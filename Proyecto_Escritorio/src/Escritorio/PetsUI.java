@@ -6,7 +6,16 @@
 package Escritorio;
 
 import Utils.Session;
-import java.awt.Frame;
+
+import java.awt.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import javax.swing.table.DefaultTableModel;
+import Utils.Utils;
+import com.google.gson.Gson;
+import vo.*;
 
 /**
  *
@@ -15,6 +24,17 @@ import java.awt.Frame;
 public class PetsUI extends javax.swing.JFrame {
 
     private Session session;
+    Pets pets = new Pets();
+    Reports reports = new Reports();
+    DefaultTableModel petsModel;
+    DefaultTableModel reportModel;
+    final String server = "localhost";
+    final int puerto = 4444;
+    Socket socket;
+    DataOutputStream salida;
+    DataInputStream entrada;
+    Utils utils = new Utils();
+    Gson gson = new Gson();
 
     /**
      * Creates new form Owners
@@ -24,6 +44,15 @@ public class PetsUI extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
 
+    public PetsUI(Session session){
+        initComponents();
+        this.session = session;
+        this.setLocationRelativeTo(null);
+        fillSessionData();
+        adaptTablePets();
+        fillTablePets();
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -52,7 +81,26 @@ public class PetsUI extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         reportPanel = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
+        loggedUserInfo = new javax.swing.JPanel();
+        userName = new javax.swing.JLabel();
+        clinicName = new javax.swing.JLabel();
+        clinicImage = new javax.swing.JLabel();
         screen = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        petsTable = new javax.swing.JTable();
+        userDetails = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        reportTable = new javax.swing.JTable();
+        name = new javax.swing.JLabel();
+        age = new javax.swing.JLabel();
+        pathologies = new javax.swing.JLabel();
+        search = new javax.swing.JPanel();
+        searchField = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        accept = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -187,6 +235,9 @@ public class PetsUI extends javax.swing.JFrame {
         closeSession.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         closeSession.setOpaque(true);
         closeSession.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeSessionMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 closeSessionMouseEntered(evt);
             }
@@ -369,10 +420,54 @@ public class PetsUI extends javax.swing.JFrame {
                 .addGap(4, 4, 4))
         );
 
+        loggedUserInfo.setBackground(new java.awt.Color(22, 160, 133));
+
+        userName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userName.setForeground(new java.awt.Color(255, 255, 255));
+        userName.setText("Bienvenido ");
+
+        clinicName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        clinicName.setForeground(new java.awt.Color(255, 255, 255));
+        clinicName.setText("Nombre clínica");
+
+        clinicImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        clinicImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/baseline_pets_white_48dp.png"))); // NOI18N
+
+        javax.swing.GroupLayout loggedUserInfoLayout = new javax.swing.GroupLayout(loggedUserInfo);
+        loggedUserInfo.setLayout(loggedUserInfoLayout);
+        loggedUserInfoLayout.setHorizontalGroup(
+            loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                        .addGroup(loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(userName)
+                            .addComponent(clinicName))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(clinicImage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        loggedUserInfoLayout.setVerticalGroup(
+            loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(userName)
+                .addGap(18, 18, 18)
+                .addComponent(clinicName)
+                .addGap(18, 18, 18)
+                .addComponent(clinicImage, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout MenuLayout = new javax.swing.GroupLayout(Menu);
         Menu.setLayout(MenuLayout);
         MenuLayout.setHorizontalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
             .addGroup(MenuLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -383,12 +478,9 @@ public class PetsUI extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(weightsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(vaccinesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(reportPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(reportPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(loggedUserInfo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27))
         );
         MenuLayout.setVerticalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -405,7 +497,9 @@ public class PetsUI extends javax.swing.JFrame {
                 .addComponent(vaccinesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(reportPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addComponent(loggedUserInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26))
         );
@@ -415,19 +509,215 @@ public class PetsUI extends javax.swing.JFrame {
 
         screen.setBackground(new java.awt.Color(26, 188, 156));
 
+        jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
+        jScrollPane2.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        petsTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        petsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        petsTable.setIntercellSpacing(new java.awt.Dimension(1, 5));
+        petsTable.setRowHeight(24);
+        petsTable.setSelectionBackground(new java.awt.Color(51, 102, 255));
+        petsTable.setShowHorizontalLines(false);
+        petsTable.setShowVerticalLines(false);
+        petsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                petsTableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(petsTable);
+
+        userDetails.setBackground(new java.awt.Color(26, 188, 156));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Nombre Completo");
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("Edad");
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("Patologías");
+
+        reportTable.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        reportTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        reportTable.setSelectionBackground(new java.awt.Color(51, 102, 255));
+        reportTable.setShowHorizontalLines(false);
+        reportTable.setShowVerticalLines(false);
+        reportTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(reportTable);
+
+        name.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        name.setForeground(new java.awt.Color(255, 255, 255));
+        name.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        name.setText(" ");
+
+        age.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        age.setForeground(new java.awt.Color(255, 255, 255));
+        age.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        age.setText(" ");
+
+        pathologies.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        pathologies.setForeground(new java.awt.Color(255, 255, 255));
+        pathologies.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        pathologies.setText(" ");
+
+        javax.swing.GroupLayout userDetailsLayout = new javax.swing.GroupLayout(userDetails);
+        userDetails.setLayout(userDetailsLayout);
+        userDetailsLayout.setHorizontalGroup(
+            userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userDetailsLayout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(age, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(name, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pathologies, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        userDetailsLayout.setVerticalGroup(
+            userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userDetailsLayout.createSequentialGroup()
+                .addGroup(userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(userDetailsLayout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(name)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(age)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pathologies))
+                    .addGroup(userDetailsLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(211, Short.MAX_VALUE))
+        );
+
+        search.setBackground(new java.awt.Color(26, 188, 156));
+
+        searchField.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchFieldKeyPressed(evt);
+            }
+        });
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/baseline_search_white_24dp.png"))); // NOI18N
+        jLabel9.setText("Buscar");
+
+        accept.setBackground(new java.awt.Color(22, 160, 133));
+        accept.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        accept.setForeground(new java.awt.Color(255, 255, 255));
+        accept.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        accept.setText("Aceptar");
+        accept.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        accept.setOpaque(true);
+        accept.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                acceptMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                acceptMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                acceptMouseExited(evt);
+            }
+        });
+        accept.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                acceptKeyPressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout searchLayout = new javax.swing.GroupLayout(search);
+        search.setLayout(searchLayout);
+        searchLayout.setHorizontalGroup(
+            searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        searchLayout.setVerticalGroup(
+            searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchLayout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addGroup(searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(7, 7, 7))
+                    .addComponent(accept, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout screenLayout = new javax.swing.GroupLayout(screen);
         screen.setLayout(screenLayout);
         screenLayout.setHorizontalGroup(
             screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 900, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, screenLayout.createSequentialGroup()
+                .addContainerGap(24, Short.MAX_VALUE)
+                .addGroup(screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(userDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 854, Short.MAX_VALUE))
+                .addGap(22, 22, 22))
+            .addGroup(screenLayout.createSequentialGroup()
+                .addGap(51, 51, 51)
+                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         screenLayout.setVerticalGroup(
             screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 700, Short.MAX_VALUE)
+            .addGroup(screenLayout.createSequentialGroup()
+                .addGap(13, 13, 13)
+                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(userDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getContentPane().add(screen);
-        screen.setBounds(300, 0, 900, 700);
+        screen.setBounds(300, 30, 900, 670);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -515,11 +805,79 @@ public class PetsUI extends javax.swing.JFrame {
     }//GEN-LAST:event_reportPanelMouseClicked
 
     private void ownersPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ownersPanelMouseClicked
-        OwnersUI ownersUI = new OwnersUI();
-        ownersUI.setSession(session);
+        OwnersUI ownersUI = new OwnersUI(session);
         ownersUI.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_ownersPanelMouseClicked
+
+    private void closeSessionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeSessionMouseClicked
+        LogOut logOut = new LogOut(this, rootPaneCheckingEnabled);
+        logOut.setVisible(true);
+    }//GEN-LAST:event_closeSessionMouseClicked
+
+    private void petsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_petsTableMouseClicked
+        session.setSelectedPet(pets.getPetById((int) petsModel.getValueAt(petsTable.getSelectedRow(), 5)));
+        name.setText(session.getSelectedPet().getName());
+        age.setText(session.getSelectedPet().getAge() + " Años");
+        pathologies.setText(session.getSelectedPet().getPathologies());
+
+        String petId = petsModel.getValueAt(petsTable.getSelectedRow(), 5).toString();
+        PackageInfo packageInfo = new PackageInfo(Utils.OBTENER_INFORMES_MASCOTA, petId);
+        System.out.println("*******************************************************************");
+        System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+        System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+        System.out.println("*******************************************************************");
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            reports = gson.fromJson(packageInfo.getObjeto(), Reports.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            session.setSelectedPet(pets.getPetById((int) petsModel.getValueAt(petsTable.getSelectedRow(), 5)));
+            adaptTableReport();
+            fillTableReport();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_petsTableMouseClicked
+
+    private void reportTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportTableMouseClicked
+        /*session.setSelectedPet(pets.getPetById((int) petsModel.getValueAt(petsTable.getSelectedRow(), 2)));
+        System.out.println("Pet id seleccionado " + session.getSelectedPet().getPetId());
+        PetsUI petsUI = new PetsUI(session);*/
+    }//GEN-LAST:event_reportTableMouseClicked
+
+    private void searchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyPressed
+        if (evt.getKeyCode() == evt.VK_ENTER) {
+            filterByField();
+        }
+    }//GEN-LAST:event_searchFieldKeyPressed
+
+    private void acceptMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_acceptMouseClicked
+        filterByField();
+    }//GEN-LAST:event_acceptMouseClicked
+
+    private void acceptMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_acceptMouseEntered
+        accept.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+    }//GEN-LAST:event_acceptMouseEntered
+
+    private void acceptMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_acceptMouseExited
+        accept.setBorder(null);
+    }//GEN-LAST:event_acceptMouseExited
+
+    private void acceptKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_acceptKeyPressed
+
+    }//GEN-LAST:event_acceptKeyPressed
 
     /**
      * @param args the command line arguments
@@ -561,6 +919,10 @@ public class PetsUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Menu;
+    private javax.swing.JLabel accept;
+    private javax.swing.JLabel age;
+    private javax.swing.JLabel clinicImage;
+    private javax.swing.JLabel clinicName;
     private javax.swing.JLabel closeSession;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
@@ -570,13 +932,28 @@ public class PetsUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPanel loggedUserInfo;
+    private javax.swing.JLabel name;
     private javax.swing.JPanel ownersPanel;
+    private javax.swing.JLabel pathologies;
     private javax.swing.JPanel petsPanel;
+    private javax.swing.JTable petsTable;
     private javax.swing.JPanel reportPanel;
+    private javax.swing.JTable reportTable;
     private javax.swing.JPanel screen;
+    private javax.swing.JPanel search;
+    private javax.swing.JTextField searchField;
+    private javax.swing.JPanel userDetails;
+    private javax.swing.JLabel userName;
     private javax.swing.JPanel vaccinesPanel;
     private javax.swing.JPanel weightsPanel;
     private javax.swing.JPanel windowControls;
@@ -589,4 +966,170 @@ public class PetsUI extends javax.swing.JFrame {
     public void setSession(Session session) {
         this.session = session;
     }
+
+    private void fillTablePets() {
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+            PackageInfo packageInfo = new PackageInfo(Utils.OBTENER_MASCOTAS_CLINICA, gson.toJson(session.getClinic()));
+            System.out.println("*******************************************************************");
+            System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+            System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            pets = gson.fromJson(packageInfo.getObjeto(), Pets.class);
+        } catch (IOException ex) {
+
+        }
+        petsModel.setRowCount(0);
+        petsModel = (DefaultTableModel) petsTable.getModel();
+
+        int row = 0;
+        for (Pet pet : pets) {
+            Report report = getLastReportId(pet.getPetId());
+            String lastVisit = (report != null)?utils.formatDate(report.getDate()):"";
+            Object[] aux = {pet.getName(), pet.getAge(), pet.renderType(pet.getPetType()), getOwnerName(pet.getOwnerId()), lastVisit, pet.getPetId()};
+            petsModel.addRow(aux);
+            if(session.getSelectedPet() != null && session.getSelectedPet().getPetId() == pet.getPetId()){
+                petsTable.setRowSelectionInterval(row,row);
+            }
+            row++;
+        }
+    }
+
+    private void adaptTablePets() {
+        String titulos[] = {"Nombre", "Edad", "Tipo", "Propietario","Última Visita" ,"petId"};
+        petsModel = new DefaultTableModel(null, titulos) {
+            //hace la tabla no editable
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        petsTable.setModel(petsModel);
+        petsTable.getColumnModel().getColumn(5).setMinWidth(0);
+        petsTable.getColumnModel().getColumn(5).setMaxWidth(0);
+        petsTable.getColumnModel().getColumn(5).setWidth(0);
+        petsTable.getColumnModel().getColumn(1).setMaxWidth(45);
+        petsTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", 0, 14));
+        petsTable.setAutoCreateRowSorter(true);
+    }
+
+    public void filterByField() {
+        if (searchField.getText().length() != 0) {
+            petsModel.setRowCount(0);
+            petsModel = (DefaultTableModel) petsTable.getModel();
+            for (Pet pet : pets) {
+                Report report = getLastReportId(pet.getPetId());
+                String lastVisit = (report != null)?utils.formatDate(report.getDate()):"";
+                Object[] aux = {pet.getName(), pet.getAge(), pet.renderType(pet.getPetType()), getOwnerName(pet.getOwnerId()), lastVisit, pet.getPetId()};
+                if (pet.getName().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                    petsModel.addRow(aux);
+                    continue;
+                }
+            }
+        } else {
+            fillTablePets();
+        }
+    }
+
+    private void fillSessionData(){
+        userName.setText(userName.getText() + session.getLoggedUser().getName() + " " + session.getLoggedUser().getSurname());
+        clinicName.setText(session.getClinic().getName());
+    }
+
+    private String getOwnerName(int id){
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+            PackageInfo packageInfo = new PackageInfo(Utils.OBTENER_NOMBRE_PROPIETARIO_ID, gson.toJson(id));
+            System.out.println("*******************************************************************");
+            System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+            System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            return gson.fromJson(packageInfo.getObjeto(), String.class);
+        } catch (IOException ex) {
+
+        }
+        return "Desconocido";
+    }
+
+    private Report getLastReportId(int petId) {
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+            PackageInfo packageInfo = new PackageInfo(Utils.OBTENER_ULTIMO_INFORME, gson.toJson(petId));
+            System.out.println("*******************************************************************");
+            System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+            System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+
+            return gson.fromJson(packageInfo.getObjeto(), Report.class);
+        } catch (IOException ex) {
+
+        }
+        return null;
+    }
+
+    private void adaptTableReport() {
+        String titulos[] = {"Fecha", "Motivo"};
+        reportModel = new DefaultTableModel(null, titulos) {
+            //hace la tabla no editable
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        reportTable.setModel(reportModel);
+        reportTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", 0, 14));
+        reportTable.setAutoCreateRowSorter(true);
+    }
+
+    private void fillTableReport() {
+        reportModel.setRowCount(0);
+        reportModel = (DefaultTableModel) reportTable.getModel();
+
+        for (Report report : reports) {
+            Object[] aux = {report.getDate(), report.getSummary(), report.getPetId()};
+            reportModel.addRow(aux);
+        }
+    }
+
 }

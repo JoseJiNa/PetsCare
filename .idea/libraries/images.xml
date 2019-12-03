@@ -1,0 +1,23 @@
+<component name="libraryTable">
+  <library name="images">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/event_note-white-36dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/lock-white-48dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/search-white-24dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/person-white-48dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/email-white-48dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/people-white-36dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/people-white-48dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/pets-white-48dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/insert_chart-white-48dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/search-white-36dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/power_settings_new-white-36dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/search-white-18dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/src/images/pets-white-36dp.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/gson-2.8.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/json-20190722.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

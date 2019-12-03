@@ -7,24 +7,25 @@ package Escritorio;
 
 import Utils.MockDao;
 import Utils.Utils;
+
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.font.TextAttribute;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
+import com.google.gson.Gson;
 import vo.Clinic;
+import vo.PackageInfo;
 import vo.User;
 
 /**
- *
  * @author jjimenez
  */
 public class SingUp extends javax.swing.JFrame {
@@ -32,11 +33,12 @@ public class SingUp extends javax.swing.JFrame {
     final String server = "localhost";
     final int puerto = 4444;
     Socket socket;
-    ObjectOutputStream salida;
-    ObjectInputStream entrada;
+    DataOutputStream salida;
+    DataInputStream entrada;
     Utils utils = new Utils();
     ArrayList<Clinic> clinicsArray;
     ArrayList<Integer> clinicsId;
+    Gson gson = new Gson();
 
     //MOCK
     MockDao mockDao = new MockDao();
@@ -56,6 +58,13 @@ public class SingUp extends javax.swing.JFrame {
         errorClinic.setText(" ");
         fillClinicCombo(clinicsArray);
         this.setLocationRelativeTo(null);
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -119,9 +128,11 @@ public class SingUp extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel2MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jLabel2MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel2MouseExited(evt);
             }
@@ -130,15 +141,15 @@ public class SingUp extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jPanel4.setBackground(new java.awt.Color(22, 160, 133));
@@ -149,9 +160,11 @@ public class SingUp extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel5MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jLabel5MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel5MouseExited(evt);
             }
@@ -160,40 +173,40 @@ public class SingUp extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout windowControlsLayout = new javax.swing.GroupLayout(windowControls);
         windowControls.setLayout(windowControlsLayout);
         windowControlsLayout.setHorizontalGroup(
-            windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(windowControlsLayout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(windowControlsLayout.createSequentialGroup()
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 60, Short.MAX_VALUE)))
+                windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(windowControlsLayout.createSequentialGroup()
+                                .addGap(61, 61, 61)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(windowControlsLayout.createSequentialGroup()
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 60, Short.MAX_VALUE)))
         );
         windowControlsLayout.setVerticalGroup(
-            windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(windowControlsLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(3, 3, 3))
-            .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(windowControlsLayout.createSequentialGroup()
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(windowControlsLayout.createSequentialGroup()
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(3, 3, 3))
+                        .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(windowControlsLayout.createSequentialGroup()
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         getContentPane().add(windowControls);
@@ -209,18 +222,18 @@ public class SingUp extends javax.swing.JFrame {
         javax.swing.GroupLayout headerLayout = new javax.swing.GroupLayout(header);
         header.setLayout(headerLayout);
         headerLayout.setHorizontalGroup(
-            headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerLayout.createSequentialGroup()
-                .addGap(175, 175, 175)
-                .addComponent(jLabel1)
-                .addGap(175, 175, 175))
+                headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerLayout.createSequentialGroup()
+                                .addGap(175, 175, 175)
+                                .addComponent(jLabel1)
+                                .addGap(175, 175, 175))
         );
         headerLayout.setVerticalGroup(
-            headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(headerLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap())
+                headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(headerLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1)
+                                .addContainerGap())
         );
 
         getContentPane().add(header);
@@ -260,6 +273,7 @@ public class SingUp extends javax.swing.JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 userFocusGained(evt);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 userFocusLost(evt);
             }
@@ -281,6 +295,7 @@ public class SingUp extends javax.swing.JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 mailFocusGained(evt);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 mailFocusLost(evt);
             }
@@ -302,6 +317,7 @@ public class SingUp extends javax.swing.JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 nameFocusGained(evt);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 nameFocusLost(evt);
             }
@@ -323,6 +339,7 @@ public class SingUp extends javax.swing.JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 surnameFocusGained(evt);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 surnameFocusLost(evt);
             }
@@ -344,6 +361,7 @@ public class SingUp extends javax.swing.JFrame {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 phoneFocusGained(evt);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
                 phoneFocusLost(evt);
             }
@@ -416,80 +434,80 @@ public class SingUp extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(97, 97, 97)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(mail, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(password, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(clinic, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(97, 97, 97)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(errorUsername)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(name, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(user, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(surname, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
-                                        .addComponent(phone, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE))
-                                    .addComponent(errorName)
-                                    .addComponent(errorPhone)
-                                    .addComponent(errorSurname)))
-                            .addComponent(password1, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(98, 98, 98))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(errorPass1)
-                            .addComponent(errorMail))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(errorClinic)
-                            .addComponent(errorPass2))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(mail, javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(password, javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(clinic, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(errorUsername)
+                                                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                .addComponent(name, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                                .addComponent(user, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                                .addComponent(surname, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
+                                                                                .addComponent(phone, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE))
+                                                                        .addComponent(errorName)
+                                                                        .addComponent(errorPhone)
+                                                                        .addComponent(errorSurname)))
+                                                        .addComponent(password1, javax.swing.GroupLayout.Alignment.LEADING))
+                                                .addGap(98, 98, 98))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(errorPass1)
+                                                        .addComponent(errorMail))
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(errorClinic)
+                                                        .addComponent(errorPass2))
+                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(errorUsername)
-                .addGap(8, 8, 8)
-                .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(errorName)
-                .addGap(4, 4, 4)
-                .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(errorSurname)
-                .addGap(4, 4, 4)
-                .addComponent(surname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(errorPhone)
-                .addGap(4, 4, 4)
-                .addComponent(phone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
-                .addComponent(errorClinic)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(clinic)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(errorMail)
-                .addGap(4, 4, 4)
-                .addComponent(mail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(errorPass1)
-                .addGap(4, 4, 4)
-                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(errorPass2)
-                .addGap(4, 4, 4)
-                .addComponent(password1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(26, Short.MAX_VALUE))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(errorUsername)
+                                .addGap(8, 8, 8)
+                                .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(errorName)
+                                .addGap(4, 4, 4)
+                                .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(errorSurname)
+                                .addGap(4, 4, 4)
+                                .addComponent(surname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(errorPhone)
+                                .addGap(4, 4, 4)
+                                .addComponent(phone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(9, 9, 9)
+                                .addComponent(errorClinic)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(clinic)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(errorMail)
+                                .addGap(4, 4, 4)
+                                .addComponent(mail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(errorPass1)
+                                .addGap(4, 4, 4)
+                                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(errorPass2)
+                                .addGap(4, 4, 4)
+                                .addComponent(password1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         accept.setBackground(new java.awt.Color(22, 160, 133));
@@ -503,9 +521,11 @@ public class SingUp extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 acceptMouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 acceptMouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 acceptMouseExited(evt);
             }
@@ -519,9 +539,11 @@ public class SingUp extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 logInMouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 logInMouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 logInMouseExited(evt);
             }
@@ -530,28 +552,28 @@ public class SingUp extends javax.swing.JFrame {
         javax.swing.GroupLayout bodyLayout = new javax.swing.GroupLayout(body);
         body.setLayout(bodyLayout);
         bodyLayout.setHorizontalGroup(
-            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
-            .addGroup(bodyLayout.createSequentialGroup()
-                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(bodyLayout.createSequentialGroup()
-                        .addGap(95, 95, 95)
-                        .addComponent(logIn))
-                    .addGroup(bodyLayout.createSequentialGroup()
-                        .addGap(185, 185, 185)
-                        .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(95, 95, 95))
+                bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+                        .addGroup(bodyLayout.createSequentialGroup()
+                                .addGroup(bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(bodyLayout.createSequentialGroup()
+                                                .addGap(95, 95, 95)
+                                                .addComponent(logIn))
+                                        .addGroup(bodyLayout.createSequentialGroup()
+                                                .addGap(185, 185, 185)
+                                                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(95, 95, 95))
         );
         bodyLayout.setVerticalGroup(
-            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bodyLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(23, 23, 23)
-                .addComponent(logIn)
-                .addContainerGap())
+                bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(bodyLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(23, 23, 23)
+                                .addComponent(logIn)
+                                .addContainerGap())
         );
 
         getContentPane().add(body);
@@ -643,13 +665,18 @@ public class SingUp extends javax.swing.JFrame {
 
     private void acceptMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_acceptMouseClicked
         try {
-            if (comprobarDatosRegistro()) {
+            User usuarioNew = comprobarDatosRegistro();
+            if (usuarioNew != null) {
+                PackageInfo packageInfo = new PackageInfo(Utils.INSERTAR_USUARIO, gson.toJson(usuarioNew));
+                    salida.writeUTF(gson.toJson(packageInfo));
+                    System.out.println("Usuario insertado");
+
                 JOptionPane.showMessageDialog(this, "Usuario registrado correctamente.");
                 LogIn logIn = new LogIn();
                 logIn.setVisible(true);
                 this.setVisible(false);
             }
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException | IOException ex) {
             Logger.getLogger(SingUp.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_acceptMouseClicked
@@ -705,7 +732,7 @@ public class SingUp extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -766,7 +793,7 @@ public class SingUp extends javax.swing.JFrame {
     private javax.swing.JPanel windowControls;
     // End of variables declaration//GEN-END:variables
 
-    private boolean comprobarDatosRegistro() throws NoSuchAlgorithmException {
+    private User comprobarDatosRegistro() throws NoSuchAlgorithmException {
         errorUsername.setText(" ");
         errorName.setText(" ");
         errorSurname.setText(" ");
@@ -817,7 +844,7 @@ public class SingUp extends javax.swing.JFrame {
         if (clinic.getSelectedIndex() == 0) {
             clinicCheck = false;
             errorClinic.setText("Por favor selecciona tu clinica");
-        } else{
+        } else {
             clinicCheck = true;
             System.out.println("CLINICA OK");
         }
@@ -841,39 +868,42 @@ public class SingUp extends javax.swing.JFrame {
             System.out.println("CONTRASEÑAS COMPLETAS E IGUALES OK");
             passCheck = true;
         }
-        User usuario = new User(user.getText(), utils.Encrypt(password.getText()), name.getText(), surname.getText(), mail.getText(), phone.getText(), 1, 1, 0);
-        if (mockDao.checkUserExist(usuario) == null) {
-            errorUsername.setText("El nombre de usuario ya existe, por favor seleccione otro");
-            userExistCheck = false;
-        } else {
-            System.out.println("USUARIO NO DUPLICADO OK");
-            userExistCheck = true;
-            usuario = new User(user.getText(), utils.Encrypt(password.getText()), name.getText(), surname.getText(), mail.getText(), phone.getText(), 1, 1, 0);
-        }
+        User usuarioOut = new User(user.getText(), utils.Encrypt(password.getText()), name.getText(), surname.getText(), mail.getText(), phone.getText(), 1, 1, 0);
+        PackageInfo packageInfo = new PackageInfo(Utils.COMPROBAR_USUARIO, gson.toJson(usuarioOut));
+        System.out.println("Paquete enviado " + gson.toJson(packageInfo));
+        try {
+            salida.writeUTF(gson.toJson(packageInfo));
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            User usuarioIn = gson.fromJson(packageInfo.getObjeto(), User.class);
+            System.out.println("Paquete recibido " + gson.toJson(packageInfo));
 
-        if (mockDao.checkMailExist(usuario) == null) {
-            errorMail.setText("El email ya se encuentra registrado");
-        } else {
-            System.out.println("EMAIL NO DUPLICADO OK");
-            mailExistCheck = true;
-            Clinic auxClinic = (Clinic) clinic.getSelectedItem();
-            usuario = new User(user.getText(), utils.Encrypt(password.getText()), name.getText(), surname.getText(), mail.getText(), phone.getText(), 
-                    auxClinic.getCliniId(), 1, 0);
-        }
-        if (userCheck && nameCheck && surNameCheck && phoneCheck && clinicCheck && mailCheck && passCheck && userExistCheck && mailExistCheck) {
-            flagCheck = true;
-            System.out.println(
-                    "FORMULARIO CORRECTO");
-        }
+            if (usuarioIn.getUsername() == null) {
+                errorUsername.setText("El nombre de usuario ya existe, por favor seleccione otro");
+                userExistCheck = false;
+            } else {
+                System.out.println("USUARIO NO DUPLICADO OK");
+                userExistCheck = true;
+            }
 
-        System.out.println("COMPROBACION COMPLETADA");
-        System.out.println("Resultado chekUserExist = " + mockDao.checkUserExist(usuario).getName());
-        if (flagCheck) {
-            mockDao.insertUserEscritorio(usuario);
-            System.out.println("Usuario insertado");
-            return true;
+            if (usuarioIn.getMail() == null) {
+                errorMail.setText("El email ya se encuentra registrado");
+            } else {
+                System.out.println("EMAIL NO DUPLICADO OK");
+                mailExistCheck = true;
+            }
+
+            User usuarioNew;
+            if (userCheck && nameCheck && surNameCheck && phoneCheck && clinicCheck && mailCheck && passCheck && userExistCheck && mailExistCheck) {
+                usuarioNew = new User(user.getText(), utils.Encrypt(password.getText()), name.getText(), surname.getText(), mail.getText(), phone.getText(), 1, 1, 0);
+                System.out.println("FORMULARIO CORRECTO");
+                return  usuarioNew;
+            }
+            System.out.println("FORMULARIO INCORRECTO");
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     public boolean comprobarFormatoTelefono(String phone) {
@@ -900,6 +930,6 @@ public class SingUp extends javax.swing.JFrame {
         }
         this.clinicsArray = clinicsArray;
     }
-    
-    
+
+
 }

@@ -22,6 +22,9 @@ public class Clinic {
         this.adress = adress;
     }
 
+    public Clinic() {
+    }
+
     public int getCliniId() {
         return cliniId;
     }

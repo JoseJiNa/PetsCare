@@ -6,6 +6,7 @@
 package Utils;
 
 import vo.Clinic;
+import vo.Pet;
 import vo.User;
 
 /**
@@ -15,6 +16,8 @@ import vo.User;
 public class Session {
     User loggedUser;
     Clinic clinic;
+    User selectedUser;
+    Pet selectedPet;
 
     public Session(User loggedUser, Clinic clinic) {
         this.loggedUser = loggedUser;
@@ -36,7 +39,20 @@ public class Session {
     public void setClinic(Clinic clinic) {
         this.clinic = clinic;
     }
-    
-    
-    
+
+    public User getSelectedUser() {
+        return selectedUser;
+    }
+
+    public void setSelectedUser(User selectedUser) {
+        this.selectedUser = selectedUser;
+    }
+
+    public Pet getSelectedPet() {
+        return selectedPet;
+    }
+
+    public void setSelectedPet(Pet selectedPet) {
+        this.selectedPet = selectedPet;
+    }
 }

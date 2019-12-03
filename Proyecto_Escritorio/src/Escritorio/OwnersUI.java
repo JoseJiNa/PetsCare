@@ -5,23 +5,34 @@
  */
 package Escritorio;
 
-import Utils.MockDao;
 import Utils.Session;
 import java.awt.Frame;
-import java.util.ArrayList;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import javax.swing.table.DefaultTableModel;
-import vo.User;
+import Utils.Utils;
+import com.google.gson.Gson;
+import vo.*;
 
 /**
- *
  * @author Pepe Jiménez Narváez
  */
 public class OwnersUI extends javax.swing.JFrame {
 
     private Session session;
-    private MockDao mockDao = new MockDao();
-    ArrayList<User> owners = new ArrayList<User>();
-    DefaultTableModel model;
+    Users owners = new Users();
+    Pets pets = new Pets();
+    DefaultTableModel ownersModel;
+    DefaultTableModel petsModel;
+    final String server = "localhost";
+    final int puerto = 4444;
+    Socket socket;
+    DataOutputStream salida;
+    DataInputStream entrada;
+    Utils utils = new Utils();
+    Gson gson = new Gson();
 
     /**
      * Creates new form Owners
@@ -29,16 +40,16 @@ public class OwnersUI extends javax.swing.JFrame {
     public OwnersUI() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
     }
 
     public OwnersUI(Session session) {
         initComponents();
-        this.session = session;    
+        this.session = session;
         this.setLocationRelativeTo(null);
-        owners = mockDao.getUsersForClinic(session.getClinic());
+        fillSessionData();
         adaptTableOwners();
         fillTableOwners();
+        adaptTablePets();
     }
 
     /**
@@ -69,16 +80,23 @@ public class OwnersUI extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         reportPanel = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        loggedUserInfo = new javax.swing.JPanel();
+        userName = new javax.swing.JLabel();
+        clinicName = new javax.swing.JLabel();
+        clinicImage = new javax.swing.JLabel();
         screen = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         ownersTable = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
+        userDetails = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        petsTable = new javax.swing.JTable();
+        name = new javax.swing.JLabel();
+        phone = new javax.swing.JLabel();
+        email = new javax.swing.JLabel();
+        search = new javax.swing.JPanel();
         searchField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         accept = new javax.swing.JLabel();
@@ -216,6 +234,9 @@ public class OwnersUI extends javax.swing.JFrame {
         closeSession.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         closeSession.setOpaque(true);
         closeSession.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeSessionMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 closeSessionMouseEntered(evt);
             }
@@ -398,17 +419,44 @@ public class OwnersUI extends javax.swing.JFrame {
                 .addGap(4, 4, 4))
         );
 
-        jPanel2.setBackground(new java.awt.Color(22, 160, 133));
+        loggedUserInfo.setBackground(new java.awt.Color(22, 160, 133));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        userName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userName.setForeground(new java.awt.Color(255, 255, 255));
+        userName.setText("Bienvenido ");
+
+        clinicName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        clinicName.setForeground(new java.awt.Color(255, 255, 255));
+        clinicName.setText("Nombre clínica");
+
+        clinicImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        clinicImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/baseline_pets_white_48dp.png"))); // NOI18N
+
+        javax.swing.GroupLayout loggedUserInfoLayout = new javax.swing.GroupLayout(loggedUserInfo);
+        loggedUserInfo.setLayout(loggedUserInfoLayout);
+        loggedUserInfoLayout.setHorizontalGroup(
+            loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                        .addGroup(loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(userName)
+                            .addComponent(clinicName))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(clinicImage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 261, Short.MAX_VALUE)
+        loggedUserInfoLayout.setVerticalGroup(
+            loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(userName)
+                .addGap(18, 18, 18)
+                .addComponent(clinicName)
+                .addGap(18, 18, 18)
+                .addComponent(clinicImage, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout MenuLayout = new javax.swing.GroupLayout(Menu);
@@ -418,24 +466,22 @@ public class OwnersUI extends javax.swing.JFrame {
             .addGroup(MenuLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(MenuLayout.createSequentialGroup()
-                        .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(ownersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(petsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(MenuLayout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(weightsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(vaccinesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(reportPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
                         .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(MenuLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(27, 27, 27))))
+                            .addComponent(loggedUserInfo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ownersPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(petsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, MenuLayout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(weightsPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(vaccinesPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(reportPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         MenuLayout.setVerticalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -453,7 +499,7 @@ public class OwnersUI extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(reportPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(loggedUserInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26))
@@ -465,9 +511,9 @@ public class OwnersUI extends javax.swing.JFrame {
         screen.setBackground(new java.awt.Color(26, 188, 156));
 
         jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
-        jScrollPane2.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        jScrollPane2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        ownersTable.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        ownersTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         ownersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -487,27 +533,34 @@ public class OwnersUI extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        ownersTable.setOpaque(false);
+        ownersTable.setIntercellSpacing(new java.awt.Dimension(1, 5));
+        ownersTable.setRowHeight(24);
         ownersTable.setSelectionBackground(new java.awt.Color(51, 102, 255));
         ownersTable.setShowHorizontalLines(false);
         ownersTable.setShowVerticalLines(false);
+        ownersTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ownersTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(ownersTable);
 
-        jPanel1.setBackground(new java.awt.Color(26, 188, 156));
+        userDetails.setBackground(new java.awt.Color(26, 188, 156));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Nombre Completo");
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Teléfono");
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Mail");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        petsTable.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        petsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -518,39 +571,78 @@ public class OwnersUI extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        petsTable.setSelectionBackground(new java.awt.Color(51, 102, 255));
+        petsTable.setShowHorizontalLines(false);
+        petsTable.setShowVerticalLines(false);
+        petsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                petsTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(petsTable);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        name.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        name.setForeground(new java.awt.Color(255, 255, 255));
+        name.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        name.setText(" ");
+
+        phone.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        phone.setForeground(new java.awt.Color(255, 255, 255));
+        phone.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        phone.setText(" ");
+
+        email.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        email.setForeground(new java.awt.Color(255, 255, 255));
+        email.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        email.setText(" ");
+
+        javax.swing.GroupLayout userDetailsLayout = new javax.swing.GroupLayout(userDetails);
+        userDetails.setLayout(userDetailsLayout);
+        userDetailsLayout.setHorizontalGroup(
+            userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userDetailsLayout.createSequentialGroup()
                 .addGap(28, 28, 28)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel6)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel7)
+                    .addComponent(name, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                    .addComponent(phone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(email, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+        userDetailsLayout.setVerticalGroup(
+            userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userDetailsLayout.createSequentialGroup()
+                .addGroup(userDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(userDetailsLayout.createSequentialGroup()
                         .addGap(24, 24, 24)
                         .addComponent(jLabel6)
-                        .addGap(28, 28, 28)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(name)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel7)
-                        .addGap(32, 32, 32)
-                        .addComponent(jLabel8))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(phone)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(email))
+                    .addGroup(userDetailsLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(211, Short.MAX_VALUE))
         );
 
+        search.setBackground(new java.awt.Color(26, 188, 156));
+
         searchField.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchFieldKeyPressed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
@@ -575,6 +667,39 @@ public class OwnersUI extends javax.swing.JFrame {
                 acceptMouseExited(evt);
             }
         });
+        accept.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                acceptKeyPressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout searchLayout = new javax.swing.GroupLayout(search);
+        search.setLayout(searchLayout);
+        searchLayout.setHorizontalGroup(
+            searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        searchLayout.setVerticalGroup(
+            searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(searchLayout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addGroup(searchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(7, 7, 7))
+                    .addComponent(accept, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout screenLayout = new javax.swing.GroupLayout(screen);
         screen.setLayout(screenLayout);
@@ -583,35 +708,23 @@ public class OwnersUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, screenLayout.createSequentialGroup()
                 .addContainerGap(24, Short.MAX_VALUE)
                 .addGroup(screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(userDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 854, Short.MAX_VALUE))
                 .addGap(22, 22, 22))
             .addGroup(screenLayout.createSequentialGroup()
                 .addGap(51, 51, 51)
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         screenLayout.setVerticalGroup(
             screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(screenLayout.createSequentialGroup()
-                .addGroup(screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(screenLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(screenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, screenLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                .addGap(13, 13, 13)
+                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(userDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -646,28 +759,32 @@ public class OwnersUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel5MouseExited
 
     private void petsPanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_petsPanelMouseEntered
-        petsPanel.setBackground(new java.awt.Color(26, 188, 156));    }//GEN-LAST:event_petsPanelMouseEntered
+        petsPanel.setBackground(new java.awt.Color(26, 188, 156));
+    }//GEN-LAST:event_petsPanelMouseEntered
 
     private void petsPanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_petsPanelMouseExited
         petsPanel.setBackground(new java.awt.Color(22, 160, 133));
     }//GEN-LAST:event_petsPanelMouseExited
 
     private void weightsPanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_weightsPanelMouseEntered
-        weightsPanel.setBackground(new java.awt.Color(26, 188, 156));    }//GEN-LAST:event_weightsPanelMouseEntered
+        weightsPanel.setBackground(new java.awt.Color(26, 188, 156));
+    }//GEN-LAST:event_weightsPanelMouseEntered
 
     private void weightsPanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_weightsPanelMouseExited
         weightsPanel.setBackground(new java.awt.Color(22, 160, 133));
     }//GEN-LAST:event_weightsPanelMouseExited
 
     private void vaccinesPanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_vaccinesPanelMouseEntered
-        vaccinesPanel.setBackground(new java.awt.Color(26, 188, 156));    }//GEN-LAST:event_vaccinesPanelMouseEntered
+        vaccinesPanel.setBackground(new java.awt.Color(26, 188, 156));
+    }//GEN-LAST:event_vaccinesPanelMouseEntered
 
     private void vaccinesPanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_vaccinesPanelMouseExited
         vaccinesPanel.setBackground(new java.awt.Color(22, 160, 133));
     }//GEN-LAST:event_vaccinesPanelMouseExited
 
     private void reportPanelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportPanelMouseEntered
-        reportPanel.setBackground(new java.awt.Color(26, 188, 156));    }//GEN-LAST:event_reportPanelMouseEntered
+        reportPanel.setBackground(new java.awt.Color(26, 188, 156));
+    }//GEN-LAST:event_reportPanelMouseEntered
 
     private void reportPanelMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportPanelMouseExited
         reportPanel.setBackground(new java.awt.Color(22, 160, 133));
@@ -682,8 +799,7 @@ public class OwnersUI extends javax.swing.JFrame {
     }//GEN-LAST:event_closeSessionMouseExited
 
     private void petsPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_petsPanelMouseClicked
-        PetsUI petsUI = new PetsUI();
-        petsUI.setSession(session);
+        PetsUI petsUI = new PetsUI(session);
         petsUI.setVisible(true);
         this.setVisible(false);
         System.out.println("DATOS SESSION: \nUSUARIO: " + session.getLoggedUser().getUsername() + "\nCLINICA :" + session.getClinic().getName());
@@ -714,22 +830,7 @@ public class OwnersUI extends javax.swing.JFrame {
     }//GEN-LAST:event_reportPanelMouseClicked
 
     private void acceptMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_acceptMouseClicked
-        model.setRowCount(0);
-        model = (DefaultTableModel) ownersTable.getModel();
-
-        for (User owner : owners) {
-            Object[] aux = {owner.getName(), owner.getSurname(), owner.getPhone(), owner.getMail()};
-            if(owner.getName().equalsIgnoreCase(searchField.getText())){
-                model.addRow(aux);
-                continue;
-            }
-            if(owner.getSurname().split(" ")[0].equalsIgnoreCase(searchField.getText())){
-                model.addRow(aux);
-                continue;
-            }
-            
-
-        }
+        filterByField();
     }//GEN-LAST:event_acceptMouseClicked
 
     private void acceptMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_acceptMouseEntered
@@ -740,6 +841,63 @@ public class OwnersUI extends javax.swing.JFrame {
         accept.setBorder(null);
     }//GEN-LAST:event_acceptMouseExited
 
+    private void acceptKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_acceptKeyPressed
+
+    }//GEN-LAST:event_acceptKeyPressed
+
+    private void searchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyPressed
+        if (evt.getKeyCode() == evt.VK_ENTER) {
+            filterByField();
+        }
+    }//GEN-LAST:event_searchFieldKeyPressed
+
+    private void ownersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ownersTableMouseClicked
+        String ownerIdAndclinicId = ownersModel.getValueAt(ownersTable.getSelectedRow(), 4).toString() + "-" + session.getClinic().getCliniId();
+        PackageInfo packageInfo = new PackageInfo(utils.OBTENER_MASCOTAS_USUARIO_CLINICA, ownerIdAndclinicId);
+        System.out.println("*******************************************************************");
+        System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+        System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+        System.out.println("*******************************************************************");
+        name.setText(ownersTable.getValueAt(ownersTable.getSelectedRow(), 0).toString() + " " + ownersTable.getValueAt(ownersTable.getSelectedRow(), 1).toString());
+        phone.setText(ownersTable.getValueAt(ownersTable.getSelectedRow(), 2).toString());
+        email.setText(ownersTable.getValueAt(ownersTable.getSelectedRow(), 3).toString());
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            pets = gson.fromJson(packageInfo.getObjeto(), Pets.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            session.setSelectedUser(owners.getUserById((int) ownersModel.getValueAt(ownersTable.getSelectedRow(), 4)));
+            adaptTablePets();
+            fillTablePets();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_ownersTableMouseClicked
+
+    private void closeSessionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeSessionMouseClicked
+        LogOut logOut = new LogOut(this, rootPaneCheckingEnabled);
+        logOut.setVisible(true);
+    }//GEN-LAST:event_closeSessionMouseClicked
+
+    private void petsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_petsTableMouseClicked
+        session.setSelectedPet(pets.getPetById((int) petsModel.getValueAt(petsTable.getSelectedRow(), 2)));
+        System.out.println("Pet id seleccionado " + session.getSelectedPet().getPetId());
+        PetsUI petsUI = new PetsUI(session);
+        petsUI.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_petsTableMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -747,7 +905,7 @@ public class OwnersUI extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -779,7 +937,10 @@ public class OwnersUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Menu;
     private javax.swing.JLabel accept;
+    private javax.swing.JLabel clinicImage;
+    private javax.swing.JLabel clinicName;
     private javax.swing.JLabel closeSession;
+    private javax.swing.JLabel email;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -792,20 +953,24 @@ public class OwnersUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel loggedUserInfo;
+    private javax.swing.JLabel name;
     private javax.swing.JPanel ownersPanel;
     private javax.swing.JTable ownersTable;
     private javax.swing.JPanel petsPanel;
+    private javax.swing.JTable petsTable;
+    private javax.swing.JLabel phone;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel screen;
+    private javax.swing.JPanel search;
     private javax.swing.JTextField searchField;
+    private javax.swing.JPanel userDetails;
+    private javax.swing.JLabel userName;
     private javax.swing.JPanel vaccinesPanel;
     private javax.swing.JPanel weightsPanel;
     private javax.swing.JPanel windowControls;
@@ -820,8 +985,8 @@ public class OwnersUI extends javax.swing.JFrame {
     }
 
     private void adaptTableOwners() {
-        String titulos[] = {"Nombre", "Apellidos", "Teléfono", "Mail"};
-        model = new DefaultTableModel(null, titulos) {
+        String titulos[] = {"Nombre", "Apellidos", "Teléfono", "Mail", "ownerId"};
+        ownersModel = new DefaultTableModel(null, titulos) {
             //hace la tabla no editable
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -829,19 +994,101 @@ public class OwnersUI extends javax.swing.JFrame {
             }
         };
 
-        ownersTable.setModel(model);
-
+        ownersTable.setModel(ownersModel);
+        ownersTable.getColumnModel().getColumn(4).setMinWidth(0);
+        ownersTable.getColumnModel().getColumn(4).setMaxWidth(0);
+        ownersTable.getColumnModel().getColumn(4).setWidth(0);
+        ownersTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", 0, 14));
+        ownersTable.setAutoCreateRowSorter(true);
     }
 
     private void fillTableOwners() {
-        model.setRowCount(0);
-        model = (DefaultTableModel) ownersTable.getModel();
-
-        for (User owner : owners) {
-            Object[] aux = {owner.getName(), owner.getSurname(), owner.getPhone(), owner.getMail()};
-            model.addRow(aux);
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+            PackageInfo packageInfo = new PackageInfo(Utils.OBTENER_CLIENTES_CLINICA, gson.toJson(session.getClinic()));
+            System.out.println("*******************************************************************");
+            System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+            System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            owners = gson.fromJson(packageInfo.getObjeto(), Users.class);
+        } catch (IOException ex) {
 
         }
+        ownersModel.setRowCount(0);
+        ownersModel = (DefaultTableModel) ownersTable.getModel();
 
+        for (User owner : owners) {
+            Object[] aux = {owner.getName(), owner.getSurname(), owner.getPhone(), owner.getMail(), owner.getUserId()};
+            ownersModel.addRow(aux);
+        }
+
+    }
+
+
+    public void filterByField() {
+        if (searchField.getText().length() != 0) {
+            ownersModel.setRowCount(0);
+            ownersModel = (DefaultTableModel) ownersTable.getModel();
+            for (User owner : owners) {
+                Object[] aux = {owner.getName(), owner.getSurname(), owner.getPhone(), owner.getMail(), owner.getUserId()};
+                if (owner.getName().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                    ownersModel.addRow(aux);
+                    continue;
+                }
+                if (owner.getSurname().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                    ownersModel.addRow(aux);
+                    continue;
+                }
+
+            }
+        } else {
+            fillTableOwners();
+        }
+    }
+
+    private void fillTablePets() {
+        petsModel.setRowCount(0);
+        petsModel = (DefaultTableModel) petsTable.getModel();
+
+        for (Pet pet : pets) {
+            Object[] aux = {pet.getName(), pet.getAge(), pet.getPetId()};
+            petsModel.addRow(aux);
+        }
+    }
+
+    private void adaptTablePets() {
+        String titulos[] = {"Nombre", "Edad", "petId"};
+        petsModel = new DefaultTableModel(null, titulos) {
+            //hace la tabla no editable
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        petsTable.setModel(petsModel);
+        petsTable.getColumnModel().getColumn(2).setMinWidth(0);
+        petsTable.getColumnModel().getColumn(2).setMaxWidth(0);
+        petsTable.getColumnModel().getColumn(2).setWidth(0);
+        petsTable.getTableHeader().setFont(new java.awt.Font("Segoe UI", 0, 14));
+        petsTable.setAutoCreateRowSorter(true);
+    }
+
+    private void fillSessionData(){
+        userName.setText(userName.getText() + session.getLoggedUser().getName() + " " + session.getLoggedUser().getSurname());
+        clinicName.setText(session.getClinic().getName());
     }
 }

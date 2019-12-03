@@ -26,6 +26,13 @@ public class ReportsUI extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
 
+    public ReportsUI(Session session){
+        initComponents();
+        this.session = session;
+        this.setLocationRelativeTo(null);
+        userName.setText(userName.getText() + session.getLoggedUser().getName() + " " + session.getLoggedUser().getSurname());
+        clinicName.setText(session.getClinic().getName());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -54,11 +61,14 @@ public class ReportsUI extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         reportPanel = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
+        loggedUserInfo = new javax.swing.JPanel();
+        userName = new javax.swing.JLabel();
+        clinicName = new javax.swing.JLabel();
+        clinicImage = new javax.swing.JLabel();
         screen = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1200, 700));
         setResizable(false);
         getContentPane().setLayout(null);
 
@@ -189,6 +199,9 @@ public class ReportsUI extends javax.swing.JFrame {
         closeSession.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         closeSession.setOpaque(true);
         closeSession.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeSessionMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 closeSessionMouseEntered(evt);
             }
@@ -371,10 +384,54 @@ public class ReportsUI extends javax.swing.JFrame {
                 .addGap(4, 4, 4))
         );
 
+        loggedUserInfo.setBackground(new java.awt.Color(22, 160, 133));
+
+        userName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userName.setForeground(new java.awt.Color(255, 255, 255));
+        userName.setText("Bienvenido ");
+
+        clinicName.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        clinicName.setForeground(new java.awt.Color(255, 255, 255));
+        clinicName.setText("Nombre clínica");
+
+        clinicImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        clinicImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/baseline_pets_white_48dp.png"))); // NOI18N
+
+        javax.swing.GroupLayout loggedUserInfoLayout = new javax.swing.GroupLayout(loggedUserInfo);
+        loggedUserInfo.setLayout(loggedUserInfoLayout);
+        loggedUserInfoLayout.setHorizontalGroup(
+            loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                        .addGroup(loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(userName)
+                            .addComponent(clinicName))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(clinicImage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        loggedUserInfoLayout.setVerticalGroup(
+            loggedUserInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loggedUserInfoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(userName)
+                .addGap(18, 18, 18)
+                .addComponent(clinicName)
+                .addGap(18, 18, 18)
+                .addComponent(clinicImage, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout MenuLayout = new javax.swing.GroupLayout(Menu);
         Menu.setLayout(MenuLayout);
         MenuLayout.setHorizontalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
             .addGroup(MenuLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -385,12 +442,9 @@ public class ReportsUI extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(weightsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(vaccinesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(reportPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(reportPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(loggedUserInfo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MenuLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27))
         );
         MenuLayout.setVerticalGroup(
             MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -407,7 +461,9 @@ public class ReportsUI extends javax.swing.JFrame {
                 .addComponent(vaccinesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(reportPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addComponent(loggedUserInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(closeSession, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26))
         );
@@ -524,6 +580,11 @@ public class ReportsUI extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_ownersPanelMouseClicked
 
+    private void closeSessionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeSessionMouseClicked
+                LogOut logOut = new LogOut(this, rootPaneCheckingEnabled);
+        logOut.setVisible(true);
+    }//GEN-LAST:event_closeSessionMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -564,6 +625,8 @@ public class ReportsUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Menu;
+    private javax.swing.JLabel clinicImage;
+    private javax.swing.JLabel clinicName;
     private javax.swing.JLabel closeSession;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
@@ -576,10 +639,12 @@ public class ReportsUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel loggedUserInfo;
     private javax.swing.JPanel ownersPanel;
     private javax.swing.JPanel petsPanel;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JPanel screen;
+    private javax.swing.JLabel userName;
     private javax.swing.JPanel vaccinesPanel;
     private javax.swing.JPanel weightsPanel;
     private javax.swing.JPanel windowControls;

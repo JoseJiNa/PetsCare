@@ -14,9 +14,9 @@ import java.io.Serializable;
 public class PackageInfo implements Serializable{
     
     private int operacion;
-    private Object objeto;
+    private String objeto;
 
-    public PackageInfo(int tipo, User objeto) {
+    public PackageInfo(int tipo, String objeto) {
         this.operacion = tipo;
         this.objeto = objeto;
     }
@@ -32,13 +32,13 @@ public class PackageInfo implements Serializable{
         this.operacion = tipo;
     }
 
-    public Object getObjeto() {
+    public String getObjeto() {
         return objeto;
     }
 
-    public void setObjeto(Object objeto) {
+    public void setObjeto(String objeto) {
         this.objeto = objeto;
     }
-    
-    
+
+
 }

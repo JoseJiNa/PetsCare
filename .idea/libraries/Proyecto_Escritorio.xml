@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Proyecto_Escritorio">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/jar_files.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/gson-2.8.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Proyecto_Escritorio/json-20190722.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

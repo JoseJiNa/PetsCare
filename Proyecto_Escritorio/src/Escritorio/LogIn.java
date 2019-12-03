@@ -5,27 +5,27 @@
  */
 package Escritorio;
 
-import Utils.MockDao;
+
 import Utils.Session;
 import Utils.Utils;
 import com.google.gson.Gson;
+
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.font.TextAttribute;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
+import vo.Clinic;
 import vo.PackageInfo;
 import vo.User;
 
 /**
- *
  * @author jjimenez
  */
 public class LogIn extends javax.swing.JFrame {
@@ -33,14 +33,11 @@ public class LogIn extends javax.swing.JFrame {
     final String server = "localhost";
     final int puerto = 4444;
     Socket socket;
-    ObjectOutputStream salida;
-    ObjectInputStream entrada;
+    DataOutputStream salida;
+    DataInputStream entrada;
     Utils utils = new Utils();
     Session session;
     Gson gson = new Gson();
-
-    //MOCK
-    MockDao mockDao = new MockDao();
 
     /**
      * Creates new form Main
@@ -49,13 +46,6 @@ public class LogIn extends javax.swing.JFrame {
         initComponents();
 
         this.setLocationRelativeTo(null);
-//        try {
-//            socket = new Socket(server, puerto);
-//            salida = new ObjectOutputStream(socket.getOutputStream());
-//            entrada = new ObjectInputStream(socket.getInputStream());
-//        } catch (IOException ex) {
-//            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
-//        }
     }
 
     /**
@@ -106,9 +96,11 @@ public class LogIn extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel2MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jLabel2MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel2MouseExited(evt);
             }
@@ -117,15 +109,15 @@ public class LogIn extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(0, 0, 0)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         jPanel4.setBackground(new java.awt.Color(22, 160, 133));
@@ -136,9 +128,11 @@ public class LogIn extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel5MouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jLabel5MouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jLabel5MouseExited(evt);
             }
@@ -147,40 +141,40 @@ public class LogIn extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout windowControlsLayout = new javax.swing.GroupLayout(windowControls);
         windowControls.setLayout(windowControlsLayout);
         windowControlsLayout.setHorizontalGroup(
-            windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(windowControlsLayout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(windowControlsLayout.createSequentialGroup()
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 60, Short.MAX_VALUE)))
+                windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(windowControlsLayout.createSequentialGroup()
+                                .addGap(61, 61, 61)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(windowControlsLayout.createSequentialGroup()
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 60, Short.MAX_VALUE)))
         );
         windowControlsLayout.setVerticalGroup(
-            windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(windowControlsLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(3, 3, 3))
-            .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(windowControlsLayout.createSequentialGroup()
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(windowControlsLayout.createSequentialGroup()
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(3, 3, 3))
+                        .addGroup(windowControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(windowControlsLayout.createSequentialGroup()
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         getContentPane().add(windowControls);
@@ -196,18 +190,18 @@ public class LogIn extends javax.swing.JFrame {
         javax.swing.GroupLayout headerLayout = new javax.swing.GroupLayout(header);
         header.setLayout(headerLayout);
         headerLayout.setHorizontalGroup(
-            headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(headerLayout.createSequentialGroup()
-                .addGap(102, 102, 102)
-                .addComponent(jLabel1)
-                .addGap(102, 102, 102))
+                headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(headerLayout.createSequentialGroup()
+                                .addGap(102, 102, 102)
+                                .addComponent(jLabel1)
+                                .addGap(102, 102, 102))
         );
         headerLayout.setVerticalGroup(
-            headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerLayout.createSequentialGroup()
-                .addContainerGap(72, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(72, 72, 72))
+                headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerLayout.createSequentialGroup()
+                                .addContainerGap(72, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addGap(72, 72, 72))
         );
 
         getContentPane().add(header);
@@ -266,33 +260,33 @@ public class LogIn extends javax.swing.JFrame {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(113, 113, 113)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(113, 113, 113))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(113, 113, 113)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jLabel4)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jLabel3)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(113, 113, 113))
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                .addComponent(jLabel4))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGap(22, 22, 22)
+                                .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                                .addComponent(jLabel4))
         );
 
         accept.setBackground(new java.awt.Color(22, 160, 133));
@@ -306,9 +300,11 @@ public class LogIn extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 acceptMouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 acceptMouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 acceptMouseExited(evt);
             }
@@ -322,9 +318,11 @@ public class LogIn extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 signUpMouseClicked(evt);
             }
+
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 signUpMouseEntered(evt);
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 signUpMouseExited(evt);
             }
@@ -333,27 +331,27 @@ public class LogIn extends javax.swing.JFrame {
         javax.swing.GroupLayout bodyLayout = new javax.swing.GroupLayout(body);
         body.setLayout(bodyLayout);
         bodyLayout.setHorizontalGroup(
-            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bodyLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(187, 187, 187))
-            .addGroup(bodyLayout.createSequentialGroup()
-                .addGap(99, 99, 99)
-                .addComponent(signUp)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bodyLayout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(187, 187, 187))
+                        .addGroup(bodyLayout.createSequentialGroup()
+                                .addGap(99, 99, 99)
+                                .addComponent(signUp)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         bodyLayout.setVerticalGroup(
-            bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bodyLayout.createSequentialGroup()
-                .addGap(101, 101, 101)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(65, 65, 65)
-                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
-                .addComponent(signUp)
-                .addContainerGap(140, Short.MAX_VALUE))
+                bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(bodyLayout.createSequentialGroup()
+                                .addGap(101, 101, 101)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(65, 65, 65)
+                                .addComponent(accept, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(31, 31, 31)
+                                .addComponent(signUp)
+                                .addContainerGap(140, Short.MAX_VALUE))
         );
 
         getContentPane().add(body);
@@ -408,7 +406,7 @@ public class LogIn extends javax.swing.JFrame {
     }//GEN-LAST:event_acceptMouseClicked
 
     private void passwordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyPressed
-        if (evt.getKeyCode() == 10) {
+        if (evt.getKeyCode() == evt.VK_ENTER) {
             enviarDatosLogIn();
         }
     }//GEN-LAST:event_passwordKeyPressed
@@ -444,7 +442,7 @@ public class LogIn extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -496,8 +494,16 @@ public class LogIn extends javax.swing.JFrame {
     }
 
     public void enviarDatosLogIn() {
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
         User userToSend = new User();
-        User userReceived = new User();
+        User userReceived;
+        PackageInfo packageOut;
         userToSend.setUsername(user.getText());
         char[] pass = password.getPassword();
         String passString = "";
@@ -509,45 +515,73 @@ public class LogIn extends javax.swing.JFrame {
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("User = " + userToSend.getUsername());
-        System.out.println("Password = " + userToSend.getPassword());
-        PackageInfo packageInfo = new PackageInfo(Utils.COMPROBAR_USUARIO_ESCRITORIO, userToSend);
-//        try {
-//            salida.writeObject(packageInfo);
-//            userReceived = (User) entrada.readObject();
-//            System.out.println("User received: " + userReceived.getPhone());
-//        } catch (IOException ex) {
-//            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        userReceived = mockDao.checkUserLogin(userToSend);
-        String packageReceivedJson = gson.toJson(packageInfo);
-        System.out.println(packageReceivedJson);
-        
-        PackageInfo aux = gson.fromJson(packageReceivedJson, PackageInfo.class);
-        User user = (User) aux.getObjeto();
-        System.out.println(user.getMail());
-        
-        
+        PackageInfo packageInfo = new PackageInfo(Utils.COMPROBAR_USUARIO, gson.toJson(userToSend));
+        System.out.println("*******************************************************************");
+        System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+        System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+        System.out.println("*******************************************************************");
         try {
-        System.out.println("User received: " + userReceived.getName());
-            if (userReceived.getVetDoc() == 1) {
-                createSession(userReceived);
-                OwnersUI ownersUI = new OwnersUI(session);
-                ownersUI.setSession(session);
-                ownersUI.setVisible(true);
-                this.setVisible(false);
-            }
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            salida.writeUTF(gson.toJson(packageInfo));
+            //recibo el packageInfo y extraigo el usuario
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+        } catch (IOException ex) {
+            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("*******************************************************************");
+        System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+        System.out.println("*******************************************************************");
+        userReceived = gson.fromJson(packageInfo.getObjeto(), User.class);
 
-        } catch (NullPointerException ex) {
+        if (userReceived != null) {
+            createSession(userReceived);
+            OwnersUI ownersUI = new OwnersUI(session);
+            ownersUI.setSession(session);
+            ownersUI.setVisible(true);
+            this.setVisible(false);
+        } else {
             JOptionPane.showMessageDialog(this, "El usuario o la contraseña son incorrectos.");
         }
     }
-    
-    
-    private Session createSession(User user){
-        session = new Session(user, mockDao.getClinicFromId(user.getClincId()));
+
+
+    private Session createSession(User user) {
+        System.out.println("*******************************************************************");
+        System.out.println("CREANDO SESSION DE USUARIO");
+        System.out.println("*******************************************************************");
+        try {
+            socket = new Socket(server, puerto);
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(LogIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        PackageInfo packageInfo = new PackageInfo(Utils.OBTENER_CLINICA_ID, gson.toJson(user));
+        System.out.println("*******************************************************************");
+        System.out.println("CONSULTA A REALIZAR: " + packageInfo.getTipo());
+        System.out.println("Objeto dentro: " + packageInfo.getObjeto());
+        System.out.println("*******************************************************************");
+        try {
+            salida.writeUTF(gson.toJson(packageInfo));
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE ENVIADO AL SERVIDOR");
+            System.out.println("*******************************************************************");
+            packageInfo = gson.fromJson(entrada.readUTF(), PackageInfo.class);
+            System.out.println("*******************************************************************");
+            System.out.println("PAQUETE RECIBIDO DEL SERVIDOR");
+            System.out.println("*******************************************************************");
+            System.out.println("*******************************************************************");
+            System.out.println("RESPUESTA: " + packageInfo.getTipo() + " : " + packageInfo.getObjeto());
+            System.out.println("*******************************************************************");
+            session = new Session(user, gson.fromJson(packageInfo.getObjeto(), Clinic.class));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return session;
     }
 }

@@ -63,7 +63,7 @@ public class MockDao {
             ps.setString(5, usuario.getSurname());
             ps.setString(6, usuario.getPhone());
             ps.setInt(7, usuario.getClincId());
-            ps.setInt(8, usuario.getVetDoc());
+            //ps.setInt(8, usuario.getVetDoc());
 
             ps.executeUpdate();
 
@@ -109,7 +109,7 @@ public class MockDao {
                     usuario.setPhone(rs.getString("phone"));
                     usuario.setMail(rs.getString("email"));
                     usuario.setClincId(rs.getInt("clinic_id"));
-                    usuario.setVetDoc(rs.getInt("vetdoc"));
+                    //usuario.setVetDoc(rs.getInt("vetdoc"));
                 } else {
                     System.out.println("Usuario nulo enviado por contraseña incorrecta");
                     usuario = null;

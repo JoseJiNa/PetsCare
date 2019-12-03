@@ -21,8 +21,7 @@ public class User implements Serializable {
     private String mail;
     private String phone;
     private int clincId;
-    private int vetDoc;
-    private int admin;
+    private int userType;
 
     public User(String username, String password, String name, String surname, String mail, String phone, int clincId, int vetDoc, int admin) {
         this.username = username;
@@ -32,8 +31,6 @@ public class User implements Serializable {
         this.mail = mail;
         this.phone = phone;
         this.clincId = clincId;
-        this.vetDoc = vetDoc;
-        this.admin = admin;
     }
 
     public User() {
@@ -95,22 +92,6 @@ public class User implements Serializable {
         this.clincId = clincId;
     }
 
-    public int getVetDoc() {
-        return vetDoc;
-    }
-
-    public void setVetDoc(int vetDoc) {
-        this.vetDoc = vetDoc;
-    }
-
-    public int getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(int admin) {
-        this.admin = admin;
-    }
-
     public int getUserId() {
         return userId;
     }
@@ -119,4 +100,11 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
 }
