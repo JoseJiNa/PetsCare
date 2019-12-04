@@ -10,8 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import vo.User;
-import vo.Vaccine;
+
+import vo.Single.Vaccine;
+import vo.Multiple.Vaccines;
 
 /**
  *
@@ -21,7 +22,7 @@ public class VaccinePOP {
 
     DBConnection dbConnection = new DBConnection();
 
-    public void insertVaccine(Vaccine vac) {
+    public boolean insertVaccine(Vaccine vac) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "INSERT INTO `petcare`.`vaccines` (`vac_name`, `pet_type`, `renov_period`) VALUES (?,?,?)";
@@ -34,17 +35,18 @@ public class VaccinePOP {
             ps.setInt(3, vac.getRenovPeriod());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public ArrayList<Vaccine> getVaccinesForPetType(int petType) {
+    public Vaccines getVaccinesForPetType(int petType) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "SELECT * FROM vaccines WHERE pet_type = ?";
-        ArrayList<Vaccine> vaccines = new ArrayList<>();
+        Vaccines vaccines = new Vaccines();
         Vaccine aux;
         try {
             connection = dbConnection.getConnection();
@@ -68,7 +70,7 @@ public class VaccinePOP {
         return vaccines;
     }
 
-    public void deleteVaccine(Vaccine vac) {
+    public boolean deleteVaccine(Vaccine vac) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "DELETE FROM `petcare`.`vaccines` WHERE vac_id = ? ";
@@ -79,10 +81,11 @@ public class VaccinePOP {
             ps.setInt(1, vac.getVaccineId());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
     
     public Vaccine getVaccineById(int vaccineId) {

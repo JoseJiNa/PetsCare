@@ -9,9 +9,10 @@ import connection.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import vo.Pet;
-import vo.PetWeight;
+
+import vo.Single.Pet;
+import vo.Single.PetWeight;
+import vo.Multiple.PetWeights;
 
 /**
  *
@@ -21,19 +22,17 @@ public class PetWeightPOP {
 
     DBConnection dbConnection = new DBConnection();
 
-    public ArrayList<PetWeight> getPetWeightsForPet(Pet pet) {
+    public PetWeights getPetWeightsForPet(Pet pet) {
         Connection connection = null;
         PreparedStatement ps = null;
-        String query = "SELECT * FROM `petcare`.`pet_weight` WHERE pet_id = ? ORDER BY weight_date";
-        ArrayList<PetWeight> weights = new ArrayList<>();
+        String query = "SELECT * FROM `petcare`.`pet_weight` WHERE pet_id = ? ORDER BY weight_date DESC";
+        PetWeights weights = new PetWeights();
         PetWeight aux;
 
         try {
             connection = dbConnection.getConnection();
             ps = connection.prepareStatement(query);
-
             ps.setInt(1, pet.getPetId());
-
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 aux = new PetWeight();
@@ -49,7 +48,7 @@ public class PetWeightPOP {
         return weights;
     }
 
-    public void insertPetWeight(PetWeight petWeight) {
+    public boolean insertPetWeight(PetWeight petWeight) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "INSERT INTO `petcare`.`pet_weight` (`pet_id`, `weight_date`, `weight_value`) VALUES (?,?,?)";
@@ -62,13 +61,14 @@ public class PetWeightPOP {
             ps.setDouble(3, petWeight.getWeightValue());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void deletePetWeight(PetWeight petWeight) {
+    public boolean deletePetWeight(PetWeight petWeight) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "DELETE FROM `petcare`.`pet_weight` WHERE pet_id = ? AND weight_date = ?";
@@ -80,9 +80,10 @@ public class PetWeightPOP {
             ps.setDate(1, petWeight.getWeightDate());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 }

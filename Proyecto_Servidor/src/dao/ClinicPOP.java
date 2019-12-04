@@ -10,8 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import vo.Clinic;
-import vo.User;
+import vo.Single.Clinic;
 
 /**
  *
@@ -21,7 +20,7 @@ public class ClinicPOP {
     
     DBConnection dbConnection = new DBConnection();
     
-    public void insertClinica(Clinic clinica){
+    public boolean insertClinica(Clinic clinica){
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "INSERT INTO `petcare`.`clinic` (`clinic_name`, `phone`, `address`) VALUES (?,?,?)";
@@ -34,10 +33,11 @@ public class ClinicPOP {
             ps.setString(3, clinica.getAdress());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
     
     public void deleteClinic(Clinic clinica){

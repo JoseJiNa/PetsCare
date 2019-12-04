@@ -15,7 +15,11 @@ import java.net.Socket;
 import javax.swing.table.DefaultTableModel;
 import Utils.Utils;
 import com.google.gson.Gson;
-import vo.*;
+import vo.Multiple.Pets;
+import vo.Multiple.Reports;
+import vo.Single.PackageInfo;
+import vo.Single.Pet;
+import vo.Single.Report;
 
 /**
  *

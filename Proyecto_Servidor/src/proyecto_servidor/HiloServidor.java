@@ -17,7 +17,13 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import vo.*;
+import vo.Multiple.Pets;
+import vo.Multiple.Reports;
+import vo.Multiple.Users;
+import vo.Single.Clinic;
+import vo.Single.PackageInfo;
+import vo.Single.Report;
+import vo.Single.User;
 
 /**
  *

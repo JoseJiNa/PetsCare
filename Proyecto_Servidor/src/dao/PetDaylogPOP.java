@@ -6,31 +6,30 @@
 package dao;
 
 import connection.DBConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import vo.Clinic;
-import vo.Pet;
-import vo.PetDaylog;
-import vo.User;
+
+import vo.Multiple.PetDaylogs;
+import vo.Single.Pet;
+import vo.Single.PetDaylog;
 
 
 /**
- *
  * @author jjimenez
  */
 public class PetDaylogPOP {
-    
+
     DBConnection dbConnection = new DBConnection();
-    
-    public ArrayList<PetDaylog> getPetDaylogForPet(Pet pet) {
+
+    public PetDaylogs getPetDaylogForPet(Pet pet) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "SELECT * FROM `petcare`.`pet_daylogs` WHERE pet_id = ?";
-        ArrayList<PetDaylog> logs = new ArrayList<>();
+        PetDaylogs logs = new PetDaylogs();
         PetDaylog aux;
-        
+
         try {
             connection = dbConnection.getConnection();
             ps = connection.prepareStatement(query);
@@ -52,11 +51,11 @@ public class PetDaylogPOP {
         }
         return logs;
     }
-    
-        public void insertPetDaylog(PetDaylog log){
+
+    public boolean insertPetDaylog(PetDaylog log) {
         Connection connection = null;
         PreparedStatement ps = null;
-        String query = "INSERT INTO `petcare`.`pet_daylogs` (`pet_id`, `log_date`, `activity`, `appetite`, `thirst`) VALUES (?,?,?,?)";
+        String query = "INSERT INTO `petcare`.`pet_daylogs` (`pet_id`, `log_date`, `activity`, `appetite`, `thirst`) VALUES (?,?,?,?,?)";
         try {
             connection = dbConnection.getConnection();
             ps = connection.prepareStatement(query);
@@ -68,13 +67,14 @@ public class PetDaylogPOP {
             ps.setInt(5, log.getThirst());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
-        
-            public void deletePetdayLog(PetDaylog log) {
+
+    public boolean deletePetdayLog(PetDaylog log) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "DELETE FROM `petcare`.`pet_daylogs` WHERE pet_id = ? AND log_date = ?";
@@ -86,10 +86,11 @@ public class PetDaylogPOP {
             ps.setDate(1, log.getLogDate());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
 }

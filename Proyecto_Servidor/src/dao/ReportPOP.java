@@ -1,8 +1,8 @@
 package dao;
 
 import connection.DBConnection;
-import vo.Report;
-import vo.Reports;
+import vo.Single.Report;
+import vo.Multiple.Reports;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -66,5 +66,27 @@ public class ReportPOP {
             e.printStackTrace();
         }
         return reports;
+    }
+
+    public boolean insertReport(Report reportIn){
+        Connection connection = null;
+        PreparedStatement ps = null;
+        String query = "INSERT INTO pet_report (`pet_id`, `date`, `summary`, `content`, `vet_id`) VALUES (?,?,?,?,?)";
+        try {
+            connection = dbConnection.getConnection();
+            ps = connection.prepareStatement(query);
+
+            ps.setInt(1,reportIn.getPetId());
+            ps.setDate(2,reportIn.getDate());
+            ps.setString(3,reportIn.getSummary());
+            ps.setString(4,reportIn.getContent());
+            ps.setInt(5,reportIn.getVetId());
+
+            ResultSet rs = ps.executeQuery();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

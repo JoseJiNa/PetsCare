@@ -10,12 +10,10 @@ import connection.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
 
-import vo.Pet;
-import vo.PetDaylog;
-import vo.Pets;
-import vo.User;
+import vo.Single.Pet;
+import vo.Multiple.Pets;
+import vo.Single.User;
 
 /**
  * @author jjimenez
@@ -24,10 +22,10 @@ public class PetPOP {
 
     DBConnection dbConnection = new DBConnection();
 
-    public void insertPet(Pet pet) {
+    public boolean insertPet(Pet pet) {
         Connection connection = null;
         PreparedStatement ps = null;
-        String query = "INSERT INTO `petcare`.`pets` (`pet_name`, `pet_born_date`, `pet_type`, `owner_id`, `clinic_id`) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO `petcare`.`pets` (`pet_name`, `pet_born_date`, `pet_type`, `owner_id`) VALUES (?,?,?,?,?)";
 
         try {
             connection = dbConnection.getConnection();
@@ -40,13 +38,14 @@ public class PetPOP {
             ps.setInt(5, pet.getClincId());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void deletePet(Pet pet) {
+    public boolean deletePet(Pet pet) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "DELETE FROM `petcare`.`pets` WHERE pet_id = ? ";
@@ -57,10 +56,11 @@ public class PetPOP {
             ps.setInt(1, pet.getPetId());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public Pets getPetsForUser(User user) {

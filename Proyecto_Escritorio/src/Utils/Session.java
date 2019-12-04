@@ -5,9 +5,9 @@
  */
 package Utils;
 
-import vo.Clinic;
-import vo.Pet;
-import vo.User;
+import vo.Single.Clinic;
+import vo.Single.Pet;
+import vo.Single.User;
 
 /**
  *

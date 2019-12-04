@@ -9,9 +9,9 @@ import connection.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import vo.Pet;
-import vo.PetVaccine;
+import vo.Single.Pet;
+import vo.Single.PetVaccine;
+import vo.Multiple.PetVaccines;
 
 /**
  *
@@ -21,18 +21,16 @@ public class PetVaccinePOP {
 
     DBConnection dbConnection = new DBConnection();
 
-    public ArrayList<PetVaccine> getVaccinesForPet(Pet pet) {
+    public PetVaccines getVaccinesForPet(Pet pet) {
         Connection connection = null;
         PreparedStatement ps = null;
-        String query = "SELECT * FROM pet_vaccines WHERE pet_id = ?";
-        ArrayList<PetVaccine> petVaccines = new ArrayList<>();
+        String query = "SELECT * FROM pet_vaccines WHERE pet_id = ? ORDER BY date DESC";
+        PetVaccines petVaccines = new PetVaccines();
         PetVaccine aux;
         try {
             connection = dbConnection.getConnection();
             ps = connection.prepareStatement(query);
-
             ps.setInt(1, pet.getPetId());
-
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -49,7 +47,7 @@ public class PetVaccinePOP {
         return petVaccines;
     }
 
-    public void insertPetVaccine(PetVaccine petVaccine) {
+    public boolean insertPetVaccine(PetVaccine petVaccine) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "INSERT INTO `petcare`.`pet_vaccines` (`pet_id`, `vac_id`, `date`) VALUES (?,?,?)";
@@ -57,35 +55,34 @@ public class PetVaccinePOP {
         try {
             connection = dbConnection.getConnection();
             ps = connection.prepareStatement(query);
-
             ps.setInt(1, petVaccine.getPetId());
             ps.setInt(2, petVaccine.getVacId());
             ps.setDate(3, petVaccine.getVacDay());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return false;
     }
     
-    public void deletePetVaccine(PetVaccine petVaccine){
+    public boolean deletePetVaccine(PetVaccine petVaccine){
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "DELETE FROM `petcare`.`pet_vaccines` WHERE pet_id = ? AND vac_id = ? AND date = ? ";
         try {
             connection = dbConnection.getConnection();
             ps = connection.prepareStatement(query);
-
             ps.setInt(1, petVaccine.getPetId());
             ps.setInt(2, petVaccine.getVacId());
             ps.setDate(3, petVaccine.getVacDay());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 }

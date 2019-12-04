@@ -21,9 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-import vo.Clinic;
-import vo.PackageInfo;
-import vo.User;
+import vo.Single.Clinic;
+import vo.Single.PackageInfo;
+import vo.Single.User;
 
 /**
  * @author jjimenez

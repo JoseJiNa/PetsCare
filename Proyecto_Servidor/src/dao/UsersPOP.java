@@ -11,11 +11,10 @@ import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-import vo.Clinic;
-import vo.User;
-import vo.Users;
+import vo.Single.Clinic;
+import vo.Single.User;
+import vo.Multiple.Users;
 
 /**
  * @author jjimenez
@@ -24,7 +23,7 @@ public class UsersPOP {
 
     DBConnection dbConnection = new DBConnection();
 
-    public void insertUserMovil(User usuario) {
+    public boolean insertUserMovil(User usuario) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "INSERT INTO `petcare`.`owners` (`username`, `email`, `password`, `name`, `surname`, `phone`) VALUES (?,?,?,?,?,?,)";
@@ -39,15 +38,15 @@ public class UsersPOP {
             ps.setString(4, usuario.getName());
             ps.setString(5, usuario.getSurname());
             ps.setString(6, usuario.getPhone());
-
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void insertUser(User usuario) {
+    public boolean insertUser(User usuario) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "";
@@ -72,13 +71,14 @@ public class UsersPOP {
             ps.setString(5, usuario.getSurname());
             ps.setString(6, usuario.getPhone());
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void deleteUser(User usuario) {
+    public boolean deleteUser(User usuario) {
         Connection connection = null;
         PreparedStatement ps = null;
         String query = "DELETE FROM `petcare`.`users` WHERE username = ?";
@@ -89,10 +89,11 @@ public class UsersPOP {
             ps.setString(1, usuario.getUsername());
 
             ps.executeUpdate();
-
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public User checkUserLoginMobile(User usuarioIn) {
@@ -269,7 +270,6 @@ public class UsersPOP {
 
             //si la consulta devuelve algo el mail no existe y retorna nulo
             if (rs.next()) {
-                System.out.println("Usuario nulo enviado por mail existente");
                 usuario = null;
             }
         } catch (Exception e) {
